@@ -1,21 +1,13 @@
 package view;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import util.SerialPortExtensionKt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class DataRead extends JFrame {
 
@@ -37,6 +29,7 @@ public class DataRead extends JFrame {
     private JLabel serialPortName;
     private JCheckBox serialMonitorCheckBox;
     private JLabel statusLabel;
+    private JLabel statusOfSaveFile;
 
     public DataRead(String reads, String path, SerialPort port) {
         bindFrame();
@@ -60,15 +53,26 @@ public class DataRead extends JFrame {
 
         startRecordButton.addActionListener(e -> {
             dataTextArea.setBackground(Color.PINK);
-            statusLabel.setVisible(true);
+            stopAndSaveButton.setEnabled(true);
+            startRecordButton.setEnabled(false);
+            statusLabel.setEnabled(true);
+            statusOfSaveFile.setVisible(false);
             statusLabel.setText("Recording...");
             statusLabel.setForeground(Color.RED);
         });
 
         stopAndSaveButton.addActionListener(e -> {
             dataTextArea.setBackground(Color.WHITE);
-            statusLabel.setVisible(false);
-            saveFile("c");
+            stopAndSaveButton.setEnabled(false);
+            startRecordButton.setEnabled(true);
+            statusLabel.setEnabled(false);
+            statusLabel.setText("Waiting for recording");
+            statusLabel.setForeground(Color.DARK_GRAY);
+            if (saveFile("c")) {
+                int numFileSaved = dataRead;
+                statusOfSaveFile.setText("File " + --numFileSaved + " saved");
+                statusOfSaveFile.setVisible(true);
+            }
         });
     }
 
@@ -77,6 +81,9 @@ public class DataRead extends JFrame {
         numberOfReads.setText(dataRead + " of " + reads);
         pathName.setText(path);
         serialPortName.setText(port);
+        statusLabel.setForeground(Color.DARK_GRAY);
+        statusOfSaveFile.setVisible(false);
+        statusOfSaveFile.setForeground(Color.decode("#388E3C"));
     }
 
     private void bindFrame() {
@@ -92,14 +99,16 @@ public class DataRead extends JFrame {
         SerialPortExtensionKt.setDataListenerForSerialPort(port, dataTextArea);
     }
 
-    private void saveFile(String prefix) {
+    private boolean saveFile(String prefix) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + prefix + dataRead + ".txt"));
             dataTextArea.write(bufferedWriter);
             updateDataReadLabel(++dataRead);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     private void updateDataReadLabel(int dataRead) {

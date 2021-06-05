@@ -1,16 +1,10 @@
 package view;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import util.SerialPortExtensionKt;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class SerialMonitorDialog extends JDialog {
 

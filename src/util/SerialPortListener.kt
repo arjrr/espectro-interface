@@ -10,6 +10,7 @@ class SerialPortListener(
     private val outData: JTextArea,
     private val scannerDataInput: Scanner
 ) : SerialPortDataListener {
+
     override fun getListeningEvents(): Int {
         return SerialPort.LISTENING_EVENT_DATA_AVAILABLE
     }
