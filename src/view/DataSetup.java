@@ -4,13 +4,15 @@ import com.fazecast.jSerialComm.SerialPort;
 import util.Constants;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class DataSetup extends JFrame {
 
     private static final String windowName = "Data Setup";
     private static final int windowWidth = 800;
-    private static final int windowHeight = 600;
+    private static final int windowHeight = 400;
 
     private JPanel dataSetupJPanel;
     private JButton setPathButton;
@@ -34,6 +36,14 @@ public class DataSetup extends JFrame {
 
         serialMonitorButton.addActionListener(e ->
                 new SerialMonitorDialog(SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())).setVisible(true));
+
+
+        nextButton.addActionListener(e ->
+                new DataRead(
+                        Objects.requireNonNull(samplesComboBox.getSelectedItem()).toString(),
+                        pathSelected.getText(),
+                        SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())
+                ).setVisible(true));
     }
 
     public static void main(String[] args) {

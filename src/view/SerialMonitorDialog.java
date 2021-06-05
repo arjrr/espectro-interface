@@ -30,7 +30,6 @@ public class SerialMonitorDialog extends JDialog {
         showDataFromSerialPort(serialPort);
 
         buttonOK.addActionListener(e -> onOK());
-
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -85,7 +84,7 @@ public class SerialMonitorDialog extends JDialog {
                     return;
                 String data = scannerDataInput.nextLine();
                 System.out.println(data);
-                serialMonitorTextArea.append(data + "\n\n");
+                serialMonitorTextArea.append(data + "\n");
             }
         });
     }
