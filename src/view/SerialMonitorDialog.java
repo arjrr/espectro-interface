@@ -3,6 +3,7 @@ package view;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import util.SerialPortExtensionKt;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -17,12 +18,11 @@ public class SerialMonitorDialog extends JDialog {
     private static final int windowWidth = 600;
     private static final int windowHeight = 400;
 
+    private SerialPort port;
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JTextArea serialMonitorTextArea;
-
-    public SerialMonitorDialog() {
-    }
 
     public SerialMonitorDialog(SerialPort serialPort) {
         bindDialog();
@@ -30,7 +30,7 @@ public class SerialMonitorDialog extends JDialog {
         showDataFromSerialPort(serialPort);
 
         buttonOK.addActionListener(e -> onOK());
-        // call onCancel() when cross is clicked
+
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -38,20 +38,15 @@ public class SerialMonitorDialog extends JDialog {
             }
         });
 
-        // dispose on ESCAPE
         contentPane.registerKeyboardAction(e ->
-                        dispose(),
+                        onOK(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
-        // add your code here
+        getPort().closePort();
         dispose();
-    }
-
-    public static void main(String[] args) {
-        new SerialMonitorDialog();
     }
 
     private void bindDialog() {
@@ -69,24 +64,8 @@ public class SerialMonitorDialog extends JDialog {
     }
 
     private void showDataFromSerialPort(SerialPort port) {
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-        port.openPort();
-        Scanner scannerDataInput = new Scanner(port.getInputStream());
-        port.addDataListener(new SerialPortDataListener() {
-            @Override
-            public int getListeningEvents() {
-                return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-            }
-
-            @Override
-            public void serialEvent(SerialPortEvent serialPortEvent) {
-                if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-                    return;
-                String data = scannerDataInput.nextLine();
-                System.out.println(data);
-                serialMonitorTextArea.append(data + "\n");
-            }
-        });
+        SerialPortExtensionKt.setDataListenerForSerialPort(port, serialMonitorTextArea);
+        setPort(port);
     }
 
     private void showStringDataSplitOnTextArea(String data, String regex, int limit, JTextArea jTextArea) {
@@ -98,4 +77,11 @@ public class SerialMonitorDialog extends JDialog {
         }
     }
 
+    public SerialPort getPort() {
+        return port;
+    }
+
+    public void setPort(SerialPort port) {
+        this.port = port;
+    }
 }

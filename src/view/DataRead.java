@@ -6,8 +6,15 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import util.SerialPortExtensionKt;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class DataRead extends JFrame {
@@ -17,6 +24,7 @@ public class DataRead extends JFrame {
     private static final int windowHeight = 800;
 
     private int dataRead = 1;
+    private int maxDataRead = 1;
     private SerialPort serialPort;
 
     private JPanel mainJPanel;
@@ -27,36 +35,45 @@ public class DataRead extends JFrame {
     private JLabel numberOfReads;
     private JLabel pathName;
     private JLabel serialPortName;
-    private JCheckBox showDataInputCheckBox;
+    private JCheckBox serialMonitorCheckBox;
+    private JLabel statusLabel;
 
-    public DataRead() {
-        stopAndSaveButton.addActionListener(e -> dataRead++);
+    public DataRead(String reads, String path, SerialPort port) {
+        bindFrame();
+        setSerialPort(port);
+        setUpDetails(reads, path, port.getSystemPortName());
 
-        showDataInputCheckBox.addActionListener(e -> {
-            if (showDataInputCheckBox.isSelected()) {
-                showDataInputCheckBox.setSelected(false);
-                //getSerialPort().closePort();
-            } else {
-                showDataInputCheckBox.setSelected(true);
+        clearButton.addActionListener(e -> {
+            dataTextArea.selectAll();
+            dataTextArea.replaceSelection("");
+        });
+
+        serialMonitorCheckBox.addItemListener(e -> {
+            if (serialMonitorCheckBox.isSelected()) {
+                serialMonitorCheckBox.setSelected(true);
                 showDataFromSerialPort(getSerialPort());
+            } else {
+                serialMonitorCheckBox.setSelected(false);
+                getSerialPort().closePort();
             }
         });
 
-        startRecordButton.addActionListener(e -> showDataFromSerialPort(getSerialPort()));
-    }
+        startRecordButton.addActionListener(e -> {
+            dataTextArea.setBackground(Color.PINK);
+            statusLabel.setVisible(true);
+            statusLabel.setText("Recording...");
+            statusLabel.setForeground(Color.RED);
+        });
 
-    public DataRead(String reads, String path, SerialPort serialPort) {
-        bindFrame();
-        setSerialPort(serialPort);
-        showDataFromSerialPort(serialPort);
-        setUpDetails(reads, path, serialPort.getSystemPortName());
-    }
-
-    public static void main(String[] args) {
-        new DataRead();
+        stopAndSaveButton.addActionListener(e -> {
+            dataTextArea.setBackground(Color.WHITE);
+            statusLabel.setVisible(false);
+            saveFile("c");
+        });
     }
 
     private void setUpDetails(String reads, String path, String port) {
+        setMaxDataRead(Integer.parseInt(reads));
         numberOfReads.setText(dataRead + " of " + reads);
         pathName.setText(path);
         serialPortName.setText(port);
@@ -73,24 +90,20 @@ public class DataRead extends JFrame {
 
     private void showDataFromSerialPort(SerialPort port) {
         SerialPortExtensionKt.setDataListenerForSerialPort(port, dataTextArea);
-//        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-//        port.openPort();
-//        Scanner scannerDataInput = new Scanner(port.getInputStream());
-//        port.addDataListener(new SerialPortDataListener() {
-//            @Override
-//            public int getListeningEvents() {
-//                return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-//            }
-//
-//            @Override
-//            public void serialEvent(SerialPortEvent serialPortEvent) {
-//                if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-//                    return;
-//                String data = scannerDataInput.nextLine();
-//                System.out.println(data);
-//                dataTextArea.append(data + "\n");
-//            }
-//        });
+    }
+
+    private void saveFile(String prefix) {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + prefix + dataRead + ".txt"));
+            dataTextArea.write(bufferedWriter);
+            updateDataReadLabel(++dataRead);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDataReadLabel(int dataRead) {
+        numberOfReads.setText(dataRead + " of " + getMaxDataRead());
     }
 
     public SerialPort getSerialPort() {
@@ -99,5 +112,13 @@ public class DataRead extends JFrame {
 
     public void setSerialPort(SerialPort serialPort) {
         this.serialPort = serialPort;
+    }
+
+    public int getMaxDataRead() {
+        return maxDataRead;
+    }
+
+    public void setMaxDataRead(int maxDataRead) {
+        this.maxDataRead = maxDataRead;
     }
 }

@@ -37,17 +37,12 @@ public class DataSetup extends JFrame {
         serialMonitorButton.addActionListener(e ->
                 new SerialMonitorDialog(SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())).setVisible(true));
 
-
         nextButton.addActionListener(e ->
                 new DataRead(
                         Objects.requireNonNull(samplesComboBox.getSelectedItem()).toString(),
                         pathSelected.getText(),
                         SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())
                 ).setVisible(true));
-    }
-
-    public static void main(String[] args) {
-        new DataSetup();
     }
 
     private void bindFrame() {
