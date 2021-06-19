@@ -210,7 +210,7 @@
                 <properties>
                   <enabled value="false"/>
                   <font style="1"/>
-                  <text value="Waiting record"/>
+                  <text value="Waiting for recording"/>
                 </properties>
               </component>
               <component id="722aa" class="javax.swing.JLabel" binding="statusOfSaveFile">

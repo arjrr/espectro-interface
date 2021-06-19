@@ -1,6 +1,7 @@
 package view;
 
 import com.fazecast.jSerialComm.SerialPort;
+import util.Constants;
 import util.SerialPortExtensionKt;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.io.IOException;
 
 public class DataRead extends JFrame {
 
-    private static final String windowName = "Data Read";
+    private static final String windowName = Constants.titleDataRead;
     private static final int windowWidth = 800;
     private static final int windowHeight = 800;
 
@@ -35,10 +36,13 @@ public class DataRead extends JFrame {
         bindFrame();
         setSerialPort(port);
         setUpDetails(reads, path, port.getSystemPortName());
+        setActionListeners();
+    }
 
+    private void setActionListeners() {
         clearButton.addActionListener(e -> {
             dataTextArea.selectAll();
-            dataTextArea.replaceSelection("");
+            dataTextArea.replaceSelection(Constants.emptyString);
         });
 
         serialMonitorCheckBox.addItemListener(e -> {
@@ -57,7 +61,7 @@ public class DataRead extends JFrame {
             startRecordButton.setEnabled(false);
             statusLabel.setEnabled(true);
             statusOfSaveFile.setVisible(false);
-            statusLabel.setText("Recording...");
+            statusLabel.setText(Constants.recordingText);
             statusLabel.setForeground(Color.RED);
         });
 
@@ -66,12 +70,14 @@ public class DataRead extends JFrame {
             stopAndSaveButton.setEnabled(false);
             startRecordButton.setEnabled(true);
             statusLabel.setEnabled(false);
-            statusLabel.setText("Waiting for recording");
+            statusLabel.setText(Constants.waitingForRecording);
             statusLabel.setForeground(Color.DARK_GRAY);
             if (saveFile("c")) {
-                int numFileSaved = dataRead;
-                statusOfSaveFile.setText("File " + --numFileSaved + " saved");
-                statusOfSaveFile.setVisible(true);
+                setDataRecordedUI();
+                if (checkDataRecordComplete()) {
+                    setReferenceDataRecordUI();
+                    showDialog(Constants.titleDataReferenceDialog, Constants.textDataReferenceDialog, JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
     }
@@ -83,7 +89,7 @@ public class DataRead extends JFrame {
         serialPortName.setText(port);
         statusLabel.setForeground(Color.DARK_GRAY);
         statusOfSaveFile.setVisible(false);
-        statusOfSaveFile.setForeground(Color.decode("#388E3C"));
+        statusOfSaveFile.setForeground(Color.decode(Constants.darkModerateLimeGreenColor));
     }
 
     private void bindFrame() {
@@ -112,7 +118,9 @@ public class DataRead extends JFrame {
     }
 
     private void updateDataReadLabel(int dataRead) {
-        numberOfReads.setText(dataRead + " of " + getMaxDataRead());
+        if (!(dataRead > maxDataRead)) {
+            numberOfReads.setText(dataRead + " of " + getMaxDataRead());
+        }
     }
 
     public SerialPort getSerialPort() {
@@ -123,6 +131,27 @@ public class DataRead extends JFrame {
         this.serialPort = serialPort;
     }
 
+    private void setDataRecordedUI() {
+        int numFileSaved = dataRead;
+        statusOfSaveFile.setText("File " + --numFileSaved + " saved");
+        statusOfSaveFile.setVisible(true);
+        showDialog(Constants.titleSuccessDialog, Constants.textDataRecordedDialog, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void setReferenceDataRecordUI() {
+        dataTextArea.setBackground(Color.decode(Constants.softCyanLimeGreenColor));
+        numberOfReads.setForeground(Color.decode(Constants.darkModerateLimeGreenColor));
+
+    }
+
+    private boolean checkDataRecordComplete() {
+        return dataRead > maxDataRead;
+    }
+
+    private void showDialog(String title, String text, int messageType) {
+        JOptionPane.showMessageDialog(this, text, title, messageType);
+    }
+
     public int getMaxDataRead() {
         return maxDataRead;
     }
@@ -130,4 +159,5 @@ public class DataRead extends JFrame {
     public void setMaxDataRead(int maxDataRead) {
         this.maxDataRead = maxDataRead;
     }
+
 }
