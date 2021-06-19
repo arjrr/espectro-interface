@@ -6,9 +6,7 @@ import util.SerialPortExtensionKt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class DataRead extends JFrame {
 
@@ -18,6 +16,7 @@ public class DataRead extends JFrame {
 
     private int dataRead = 1;
     private int maxDataRead = 1;
+    private boolean referenceData;
     private SerialPort serialPort;
 
     private JPanel mainJPanel;
@@ -55,30 +54,11 @@ public class DataRead extends JFrame {
             }
         });
 
-        startRecordButton.addActionListener(e -> {
-            dataTextArea.setBackground(Color.PINK);
-            stopAndSaveButton.setEnabled(true);
-            startRecordButton.setEnabled(false);
-            statusLabel.setEnabled(true);
-            statusOfSaveFile.setVisible(false);
-            statusLabel.setText(Constants.recordingText);
-            statusLabel.setForeground(Color.RED);
-        });
+        startRecordButton.addActionListener(e -> setStartRecordButtonUI());
 
         stopAndSaveButton.addActionListener(e -> {
-            dataTextArea.setBackground(Color.WHITE);
-            stopAndSaveButton.setEnabled(false);
-            startRecordButton.setEnabled(true);
-            statusLabel.setEnabled(false);
-            statusLabel.setText(Constants.waitingForRecording);
-            statusLabel.setForeground(Color.DARK_GRAY);
-            if (saveFile("c")) {
-                setDataRecordedUI();
-                if (checkDataRecordComplete()) {
-                    setReferenceDataRecordUI();
-                    showDialog(Constants.titleDataReferenceDialog, Constants.textDataReferenceDialog, JOptionPane.WARNING_MESSAGE);
-                }
-            }
+            setStopAndSaveButtonUI();
+            doProcessOfSave();
         });
     }
 
@@ -111,6 +91,7 @@ public class DataRead extends JFrame {
             dataTextArea.write(bufferedWriter);
             updateDataReadLabel(++dataRead);
         } catch (IOException e) {
+            showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return false;
         }
@@ -120,6 +101,9 @@ public class DataRead extends JFrame {
     private void updateDataReadLabel(int dataRead) {
         if (!(dataRead > maxDataRead)) {
             numberOfReads.setText(dataRead + " of " + getMaxDataRead());
+        }
+        if (referenceData) {
+            numberOfReads.setText(Constants.textComplete);
         }
     }
 
@@ -141,7 +125,40 @@ public class DataRead extends JFrame {
     private void setReferenceDataRecordUI() {
         dataTextArea.setBackground(Color.decode(Constants.softCyanLimeGreenColor));
         numberOfReads.setForeground(Color.decode(Constants.darkModerateLimeGreenColor));
+    }
 
+    private void setStopAndSaveButtonUI() {
+        dataTextArea.setBackground(Color.WHITE);
+        stopAndSaveButton.setEnabled(false);
+        startRecordButton.setEnabled(true);
+        statusLabel.setEnabled(false);
+        statusLabel.setText(Constants.waitingForRecording);
+        statusLabel.setForeground(Color.DARK_GRAY);
+    }
+
+    private void setStartRecordButtonUI() {
+        dataTextArea.setBackground(Color.PINK);
+        stopAndSaveButton.setEnabled(true);
+        startRecordButton.setEnabled(false);
+        statusLabel.setEnabled(true);
+        statusOfSaveFile.setVisible(false);
+        statusLabel.setText(Constants.recordingText);
+        statusLabel.setForeground(Color.RED);
+    }
+
+    private void doProcessOfSave() {
+        if (saveFile(Constants.prefixConcentrationSample)) {
+            setDataRecordedUI();
+            if (referenceData) {
+                showDialog(Constants.titleDataPlotDialog, Constants.textDataPlotDialog, JOptionPane.INFORMATION_MESSAGE);
+                runPythonScript();
+                this.dispose();
+            } else if (checkDataRecordComplete()) {
+                setReferenceDataRecordUI();
+                showDialog(Constants.titleDataReferenceDialog, Constants.textDataReferenceDialog, JOptionPane.WARNING_MESSAGE);
+                referenceData = true;
+            }
+        }
     }
 
     private boolean checkDataRecordComplete() {
@@ -158,6 +175,16 @@ public class DataRead extends JFrame {
 
     public void setMaxDataRead(int maxDataRead) {
         this.maxDataRead = maxDataRead;
+    }
+
+    private void runPythonScript() {
+        try {
+            Runtime run = Runtime.getRuntime();
+            run.exec(Constants.CONCENTRATION_SCRIPT);
+        } catch (IOException e) {
+            showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
 }
