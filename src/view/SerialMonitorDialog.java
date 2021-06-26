@@ -62,15 +62,6 @@ public class SerialMonitorDialog extends JDialog {
         setPort(port);
     }
 
-    private void showStringDataSplitOnTextArea(String data, String regex, int limit, JTextArea jTextArea) {
-        String[] dataStrings = data.split(regex, limit);
-        System.out.println(dataStrings[0]);
-        System.out.println(dataStrings[1]);
-        for (String dataString : dataStrings) {
-            jTextArea.append(dataString + "\n");
-        }
-    }
-
     public SerialPort getPort() {
         return port;
     }
