@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 
 public class Main extends JFrame {
+
     private static final String windowName = "Spectrum Alcohol";
     private static final int windowWidth = 700;
     private static final int windowHeight = 600;

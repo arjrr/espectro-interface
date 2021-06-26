@@ -24,7 +24,10 @@ public class DataSetup extends JFrame {
     public DataSetup() {
         bindFrame();
         setUpComponents();
+        setActionListeners();
+    }
 
+    private void setActionListeners() {
         setPathButton.addActionListener(e -> {
             jFileChooser = new JFileChooser();
             jFileChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);

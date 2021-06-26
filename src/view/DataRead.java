@@ -58,7 +58,7 @@ public class DataRead extends JFrame {
 
         stopAndSaveButton.addActionListener(e -> {
             setStopAndSaveButtonUI();
-            doProcessOfSave();
+            runSave();
         });
     }
 
@@ -146,7 +146,7 @@ public class DataRead extends JFrame {
         statusLabel.setForeground(Color.RED);
     }
 
-    private void doProcessOfSave() {
+    private void runSave() {
         if (saveFile(Constants.prefixConcentrationSample)) {
             setDataRecordedUI();
             if (referenceData) {
