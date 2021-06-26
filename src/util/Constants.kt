@@ -20,6 +20,7 @@ class Constants {
         const val titleErrorDialog = "Error"
         const val CONCENTRATION_SCRIPT = "python3 /Users/user/Desktop/etoh_concentrations.py"
         const val prefixConcentrationSample = "c"
+        const val prefixRefSample = "ref"
         // endregion
 
         // region Colors

@@ -86,8 +86,14 @@ public class DataRead extends JFrame {
     }
 
     private boolean saveFile(String prefix) {
+        String fileName;
+        if (prefix.equals(Constants.prefixRefSample)) {
+            fileName = prefix;
+        } else {
+            fileName = prefix + dataRead;
+        }
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + prefix + dataRead + ".txt"));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + fileName + ".txt"));
             dataTextArea.write(bufferedWriter);
             updateDataReadLabel(++dataRead);
         } catch (IOException e) {
@@ -147,7 +153,7 @@ public class DataRead extends JFrame {
     }
 
     private void runSave() {
-        if (saveFile(Constants.prefixConcentrationSample)) {
+        if (saveFile(setPrefixFileName(referenceData))) {
             setDataRecordedUI();
             if (referenceData) {
                 showDialog(Constants.titleDataPlotDialog, Constants.textDataPlotDialog, JOptionPane.INFORMATION_MESSAGE);
@@ -158,6 +164,14 @@ public class DataRead extends JFrame {
                 showDialog(Constants.titleDataReferenceDialog, Constants.textDataReferenceDialog, JOptionPane.WARNING_MESSAGE);
                 referenceData = true;
             }
+        }
+    }
+
+    private String setPrefixFileName(Boolean isReferenceData) {
+        if (isReferenceData) {
+            return Constants.prefixRefSample;
+        } else {
+            return Constants.prefixConcentrationSample;
         }
     }
 
