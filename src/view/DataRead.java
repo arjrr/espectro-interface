@@ -17,6 +17,7 @@ public class DataRead extends JFrame {
     private int dataRead = 1;
     private int maxDataRead = 1;
     private boolean referenceData;
+    private boolean secondConcentration;
     private SerialPort serialPort;
 
     private JPanel mainJPanel;
@@ -85,25 +86,6 @@ public class DataRead extends JFrame {
         SerialPortExtensionKt.setDataListenerForSerialPort(port, dataTextArea);
     }
 
-    private boolean saveFile(String prefix) {
-        String fileName;
-        if (prefix.equals(Constants.prefixRefSample)) {
-            fileName = prefix;
-        } else {
-            fileName = prefix + dataRead;
-        }
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + fileName + ".txt"));
-            dataTextArea.write(bufferedWriter);
-            updateDataReadLabel(++dataRead);
-        } catch (IOException e) {
-            showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
     private void updateDataReadLabel(int dataRead) {
         if (!(dataRead > maxDataRead)) {
             numberOfReads.setText(dataRead + " of " + getMaxDataRead());
@@ -143,6 +125,7 @@ public class DataRead extends JFrame {
     }
 
     private void setStartRecordButtonUI() {
+        getConcentration();
         dataTextArea.setBackground(Color.PINK);
         stopAndSaveButton.setEnabled(true);
         startRecordButton.setEnabled(false);
@@ -165,6 +148,25 @@ public class DataRead extends JFrame {
                 referenceData = true;
             }
         }
+    }
+
+    private boolean saveFile(String prefix) {
+        String fileName;
+        if (prefix.equals(Constants.prefixRefSample)) {
+            fileName = prefix;
+        } else {
+            fileName = prefix + dataRead;
+        }
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + fileName + ".txt"));
+            dataTextArea.write(bufferedWriter);
+            updateDataReadLabel(++dataRead);
+        } catch (IOException e) {
+            showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private String setPrefixFileName(Boolean isReferenceData) {
@@ -199,6 +201,29 @@ public class DataRead extends JFrame {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+    }
+
+    private void getConcentration() {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + Constants.prefixConcentration + ".txt", true));
+            if (secondConcentration) {
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.append(showConcentrationInputDialog());
+            bufferedWriter.close();
+            secondConcentration = true;
+        } catch (IOException e) {
+            showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private String showConcentrationInputDialog() {
+        return JOptionPane.showInputDialog(
+                this,
+                Constants.textConcentrationDialog,
+                Constants.titleConcentrationDialog,
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
 }

@@ -18,9 +18,12 @@ class Constants {
         const val textDataPlotDialog =
             "The recorded data will be processed and plotted.\nA short preview will be displayed and the graphics will be saved in the samples directory"
         const val titleErrorDialog = "Error"
+        const val titleConcentrationDialog = "Concentration"
+        const val textConcentrationDialog = "What's the concentration in the sample?"
         const val CONCENTRATION_SCRIPT = "python3 /Users/user/Desktop/etoh_concentrations.py"
         const val prefixConcentrationSample = "c"
         const val prefixRefSample = "ref"
+        const val prefixConcentration = "concentrations"
         // endregion
 
         // region Colors
