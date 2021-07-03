@@ -49,7 +49,7 @@ public class DataSetup extends JFrame {
     private void bindFrame() {
         setTitle(windowName);
         setContentPane(dataSetupJPanel);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
         setResizable(false);

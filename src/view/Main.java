@@ -9,13 +9,11 @@ public class Main extends JFrame {
     private static final int windowHeight = 600;
     private JPanel mainJPanel;
     private JButton startCalibrationProcessButton;
+    private JButton getConcentrationByTheButton;
 
     public Main() {
         bindFrame();
-        startCalibrationProcessButton.addActionListener(e -> {
-            this.dispose();
-            new DataSetup().setVisible(true);
-        });
+        startCalibrationProcessButton.addActionListener(e -> new DataSetup().setVisible(true));
     }
 
     public static void main(String[] args) {
