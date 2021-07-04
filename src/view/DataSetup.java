@@ -38,12 +38,17 @@ public class DataSetup extends JFrame {
         serialMonitorButton.addActionListener(e ->
                 new SerialMonitorDialog(SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())).setVisible(true));
 
-        nextButton.addActionListener(e ->
+        nextButton.addActionListener(e -> {
+            if (pathSelected.getText().equals("...")) {
+                showPathMessageDialog();
+            } else {
                 new DataRead(
                         Objects.requireNonNull(samplesComboBox.getSelectedItem()).toString(),
                         pathSelected.getText(),
                         SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())
-                ).setVisible(true));
+                ).setVisible(true);
+            }
+        });
     }
 
     private void bindFrame() {
@@ -64,6 +69,14 @@ public class DataSetup extends JFrame {
         for (SerialPort port : SerialPort.getCommPorts()) {
             serialPortComboBox.addItem(port.getSystemPortName());
         }
+    }
+
+    private void showPathMessageDialog() {
+        JOptionPane.showMessageDialog(
+                this,
+                Constants.textPathDialog,
+                Constants.titlePathDialog,
+                JOptionPane.ERROR_MESSAGE);
     }
 
 }

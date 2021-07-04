@@ -5,6 +5,9 @@ class Constants {
         val numberOfSamples = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 
         // region Strings
+        const val titleSoftware = "Espectro Interface"
+        const val textButtonDescription =
+            "First step to obtain the concentration of ethanol in a sample. The calibration process aims to obtain the necessary parameters from samples with known ethanol concentration values. "
         const val titleDataRead = "Data Read"
         const val emptyString = ""
         const val recordingText = "Recording..."
@@ -20,7 +23,14 @@ class Constants {
         const val titleErrorDialog = "Error"
         const val titleConcentrationDialog = "Concentration"
         const val textConcentrationDialog = "What's the concentration in the sample?"
+        const val titlePathDialog = "Path"
+        const val textPathDialog =
+            "You need to set a path to save files. \nIt's recommended that \"C:\\Documents\\Etoh\" path to be setup."
+        const val titleGetConcentrationDialog = "Get Concentration"
+        const val textGetConcentrationDialog =
+            "Has the calibration process been carried out and the files are in the same directory?"
         const val CONCENTRATION_SCRIPT = "python3 /Users/user/Desktop/etoh_concentrations.py"
+        const val SAMPLE_SCRIPT = "python3 /Users/user/Desktop/etoh_sample.py"
         const val prefixConcentrationSample = "c"
         const val prefixRefSample = "ref"
         const val prefixConcentration = "concentrations"
