@@ -19,5 +19,6 @@ class SerialPortListener(
         if (serialPortEvent?.eventType != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return
         outData.append("${scannerDataInput.nextLine()} \n")
+        outData.caretPosition = outData.document.length
     }
 }

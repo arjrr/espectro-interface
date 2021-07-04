@@ -5,6 +5,7 @@ import util.Constants;
 import util.SerialPortExtensionKt;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.io.*;
 
@@ -31,6 +32,7 @@ public class DataRead extends JFrame {
     private JCheckBox serialMonitorCheckBox;
     private JLabel statusLabel;
     private JLabel statusOfSaveFile;
+    private JScrollPane dataScrollPane;
 
     public DataRead(String reads, String path, SerialPort port) {
         bindFrame();
