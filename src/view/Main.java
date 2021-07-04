@@ -3,7 +3,6 @@ package view;
 import util.Constants;
 
 import javax.swing.*;
-import javax.swing.plaf.multi.MultiLabelUI;
 import java.io.IOException;
 
 public class Main extends JFrame {
@@ -14,7 +13,8 @@ public class Main extends JFrame {
     private JPanel mainJPanel;
     private JButton startCalibrationProcessButton;
     private JButton getConcentrationByTheButton;
-    private JTextArea buttonDescription;
+    private JTextArea buttonCalibrationDescription;
+    private JTextArea buttonConcentrationDescription;
 
     public Main() {
         bindFrame();
@@ -36,18 +36,33 @@ public class Main extends JFrame {
     }
 
     private void setUpComponents() {
-        buttonDescription.setWrapStyleWord(true);
-        buttonDescription.setLineWrap(true);
-        buttonDescription.setEditable(false);
-        buttonDescription.setBackground(mainJPanel.getBackground());
-        buttonDescription.setText(Constants.textButtonDescription);
+        setCalibrationJTextArea();
+        setConcentrationJTextArea();
+    }
+
+    private void setCalibrationJTextArea() {
+        buttonCalibrationDescription.setWrapStyleWord(true);
+        buttonCalibrationDescription.setLineWrap(true);
+        buttonCalibrationDescription.setEditable(false);
+        buttonCalibrationDescription.setBackground(mainJPanel.getBackground());
+        buttonCalibrationDescription.setText(Constants.textCalibrationButtonDescription);
+    }
+
+    private void setConcentrationJTextArea() {
+        buttonConcentrationDescription.setWrapStyleWord(true);
+        buttonConcentrationDescription.setLineWrap(true);
+        buttonConcentrationDescription.setEditable(false);
+        buttonConcentrationDescription.setBackground(mainJPanel.getBackground());
+        buttonConcentrationDescription.setText(Constants.textConcentrationButtonDescription);
     }
 
     private void setActionListeners() {
         startCalibrationProcessButton.addActionListener(e -> new DataSetup().setVisible(true));
         getConcentrationByTheButton.addActionListener(e ->
         {
-            showDialog(Constants.titleGetConcentrationDialog, Constants.textGetConcentrationDialog, JOptionPane.WARNING_MESSAGE);
+            int dialogButton = JOptionPane.showConfirmDialog(this, Constants.textGetConcentrationDialog, Constants.titleGetConcentrationDialog, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (dialogButton == JOptionPane.NO_OPTION)
+                return;
             runPythonScript();
         });
     }
