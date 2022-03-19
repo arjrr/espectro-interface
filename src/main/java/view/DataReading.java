@@ -15,7 +15,7 @@ public class DataReading extends JFrame {
 
     private static final String windowName = Constants.titleDataRead;
     private static final int windowWidth = 800;
-    private static final int windowHeight = 400;
+    private static final int windowHeight = 500;
 
     private int dataReading = 1;
     private int maxDataReading = 1;
