@@ -205,13 +205,19 @@ public class DataReading extends JFrame {
     private void runPythonScript() {
         try {
             Runtime run = Runtime.getRuntime();
-            String command = Constants.pythonCommand + Constants.Companion.getScriptsPath() + Constants.CONCENTRATION_SCRIPT;
+            String command = Constants.pythonCommand + Constants.Companion.getScriptsPath() + getConcentrationScript();
             System.out.println(command);
             run.exec(command);
         } catch (IOException e) {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+    }
+
+    private String getConcentrationScript() {
+        if (Constants.Companion.isWindowsWorkstation())
+            return Constants.WIN_CONCENTRATION_SCRIPT;
+        return Constants.MAC_CONCENTRATION_SCRIPT;
     }
 
     private void getConcentration() {

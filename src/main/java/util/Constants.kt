@@ -32,9 +32,10 @@ class Constants {
         const val textGetConcentrationDialog =
             "Has the calibration process been carried out and the files are in the same directory?"
         const val pythonCommand = "python3 "
-        const val CONCENTRATION_SCRIPT = "/etoh_concentrations.py"
-        const val SAMPLE_SCRIPT = "/etoh_sample.py"
-        var scriptsPath = ""
+        const val MAC_CONCENTRATION_SCRIPT = "/etoh_concentrations.py"
+        const val MAC_SAMPLE_SCRIPT = "/etoh_sample.py"
+        const val WIN_CONCENTRATION_SCRIPT = "\\etoh_concentrations.py"
+        const val WIN_SAMPLE_SCRIPT = "\\etoh_sample.py"
         const val prefixConcentrationSample = "c"
         const val prefixRefSample = "ref"
         const val prefixConcentration = "concentrations"
@@ -44,6 +45,12 @@ class Constants {
         const val darkModerateLimeGreenColor = "#388E3C"
         const val softCyanLimeGreenColor = "#69F0AE"
         // endregion
+
+        // region Static Constants
+        var scriptsPath = ""
+        var isWindowsWorkstation = true
+        var isMacOsWorkstation = false
+        // endregion Static Constants
 
     }
 }
