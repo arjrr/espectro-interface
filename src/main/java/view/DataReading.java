@@ -6,20 +6,19 @@ import util.SerialPortExtensionKt;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.text.DefaultCaret;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.io.*;
 import java.util.Locale;
 
-public class DataRead extends JFrame {
+public class DataReading extends JFrame {
 
     private static final String windowName = Constants.titleDataRead;
     private static final int windowWidth = 800;
-    private static final int windowHeight = 800;
+    private static final int windowHeight = 400;
 
-    private int dataRead = 1;
-    private int maxDataRead = 1;
+    private int dataReading = 1;
+    private int maxDataReading = 1;
     private boolean referenceData;
     private boolean secondConcentration;
     private SerialPort serialPort;
@@ -37,10 +36,11 @@ public class DataRead extends JFrame {
     private JLabel statusOfSaveFile;
     private JScrollPane dataScrollPane;
 
-    public DataRead(String reads, String path, SerialPort port) {
+    public DataReading(String reads, String path, SerialPort port) {
         bindFrame();
         setSerialPort(port);
         setUpDetails(reads, path, port.getSystemPortName());
+        setUpScripts(path);
         setActionListeners();
     }
 
@@ -60,7 +60,7 @@ public class DataRead extends JFrame {
             }
         });
 
-        startRecordButton.addActionListener(e -> setStartRecordButtonUI());
+        startRecordButton.addActionListener(e -> setStartRecordingButtonUI());
 
         stopAndSaveButton.addActionListener(e -> {
             setStopAndSaveButtonUI();
@@ -69,13 +69,17 @@ public class DataRead extends JFrame {
     }
 
     private void setUpDetails(String reads, String path, String port) {
-        setMaxDataRead(Integer.parseInt(reads));
-        numberOfReads.setText(dataRead + " of " + reads);
+        setMaxDataReading(Integer.parseInt(reads));
+        numberOfReads.setText(dataReading + " of " + reads);
         pathName.setText(path);
         serialPortName.setText(port);
         statusLabel.setForeground(Color.DARK_GRAY);
         statusOfSaveFile.setVisible(false);
         statusOfSaveFile.setForeground(Color.decode(Constants.darkModerateLimeGreenColor));
+    }
+
+    private void setUpScripts(String path) {
+        Constants.Companion.setScriptsPath(path);
     }
 
     private void bindFrame() {
@@ -84,7 +88,7 @@ public class DataRead extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
     }
 
     private void showDataFromSerialPort(SerialPort port) {
@@ -92,8 +96,8 @@ public class DataRead extends JFrame {
     }
 
     private void updateDataReadLabel(int dataRead) {
-        if (!(dataRead > maxDataRead)) {
-            numberOfReads.setText(dataRead + " of " + getMaxDataRead());
+        if (!(dataRead > maxDataReading)) {
+            numberOfReads.setText(dataRead + " of " + getMaxDataReading());
         }
         if (referenceData) {
             numberOfReads.setText(Constants.textComplete);
@@ -109,7 +113,7 @@ public class DataRead extends JFrame {
     }
 
     private void setDataRecordedUI() {
-        int numFileSaved = dataRead;
+        int numFileSaved = dataReading;
         statusOfSaveFile.setText("File " + --numFileSaved + " saved");
         statusOfSaveFile.setVisible(true);
         showDialog(Constants.titleSuccessDialog, Constants.textDataRecordedDialog, JOptionPane.INFORMATION_MESSAGE);
@@ -129,7 +133,7 @@ public class DataRead extends JFrame {
         statusLabel.setForeground(Color.DARK_GRAY);
     }
 
-    private void setStartRecordButtonUI() {
+    private void setStartRecordingButtonUI() {
         getConcentration();
         dataTextArea.setBackground(Color.PINK);
         stopAndSaveButton.setEnabled(true);
@@ -160,12 +164,12 @@ public class DataRead extends JFrame {
         if (prefix.equals(Constants.prefixRefSample)) {
             fileName = prefix;
         } else {
-            fileName = prefix + dataRead;
+            fileName = prefix + dataReading;
         }
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(pathName.getText() + "/" + fileName + ".txt"));
             dataTextArea.write(bufferedWriter);
-            updateDataReadLabel(++dataRead);
+            updateDataReadLabel(++dataReading);
         } catch (IOException e) {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -183,25 +187,27 @@ public class DataRead extends JFrame {
     }
 
     private boolean checkDataRecordComplete() {
-        return dataRead > maxDataRead;
+        return dataReading > maxDataReading;
     }
 
     private void showDialog(String title, String text, int messageType) {
         JOptionPane.showMessageDialog(this, text, title, messageType);
     }
 
-    public int getMaxDataRead() {
-        return maxDataRead;
+    public int getMaxDataReading() {
+        return maxDataReading;
     }
 
-    public void setMaxDataRead(int maxDataRead) {
-        this.maxDataRead = maxDataRead;
+    public void setMaxDataReading(int maxDataReading) {
+        this.maxDataReading = maxDataReading;
     }
 
     private void runPythonScript() {
         try {
             Runtime run = Runtime.getRuntime();
-            run.exec(Constants.CONCENTRATION_SCRIPT);
+            String command = Constants.pythonCommand + Constants.Companion.getScriptsPath() + Constants.CONCENTRATION_SCRIPT;
+            System.out.println(command);
+            run.exec(command);
         } catch (IOException e) {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -214,7 +220,7 @@ public class DataRead extends JFrame {
             if (secondConcentration) {
                 bufferedWriter.newLine();
             }
-            bufferedWriter.append(showConcentrationInputDialog());
+            bufferedWriter.append(showConcentrationInputDialog().trim());
             bufferedWriter.close();
             secondConcentration = true;
         } catch (IOException e) {
@@ -224,11 +230,16 @@ public class DataRead extends JFrame {
     }
 
     private String showConcentrationInputDialog() {
-        return JOptionPane.showInputDialog(
+        String output = JOptionPane.showInputDialog(
                 this,
                 Constants.textConcentrationDialog,
                 Constants.titleConcentrationDialog,
                 JOptionPane.INFORMATION_MESSAGE);
+        if (output.equals("null")) {
+            return "";
+        } else {
+            return output;
+        }
     }
 
     {
@@ -281,7 +292,7 @@ public class DataRead extends JFrame {
         final JLabel label2 = new JLabel();
         Font label2Font = this.$$$getFont$$$(null, -1, -1, label2.getFont());
         if (label2Font != null) label2.setFont(label2Font);
-        label2.setText("Read status:");
+        label2.setText("Reading status:");
         panel4.add(label2, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("Path:");
@@ -356,4 +367,5 @@ public class DataRead extends JFrame {
         Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
         return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
+
 }

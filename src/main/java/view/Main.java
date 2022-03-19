@@ -74,7 +74,9 @@ public class Main extends JFrame {
     private void runPythonScript() {
         try {
             Runtime run = Runtime.getRuntime();
-            run.exec(Constants.SAMPLE_SCRIPT);
+            String command = Constants.pythonCommand + Constants.Companion.getScriptsPath() + Constants.SAMPLE_SCRIPT;
+            System.out.println(command);
+            run.exec(command);
         } catch (IOException e) {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();

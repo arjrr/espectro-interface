@@ -46,7 +46,7 @@ public class DataSetup extends JFrame {
             if (pathSelected.getText().equals("...")) {
                 showPathMessageDialog();
             } else {
-                new DataRead(
+                new DataReading(
                         Objects.requireNonNull(samplesComboBox.getSelectedItem()).toString(),
                         pathSelected.getText(),
                         SerialPort.getCommPort(Objects.requireNonNull(serialPortComboBox.getSelectedItem()).toString())
