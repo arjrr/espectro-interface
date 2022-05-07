@@ -226,9 +226,11 @@ public class DataReading extends JFrame {
             if (secondConcentration) {
                 bufferedWriter.newLine();
             }
-            bufferedWriter.append(showConcentrationInputDialog().trim());
-            bufferedWriter.close();
-            secondConcentration = true;
+            if (!checkDataRecordComplete()) {
+                bufferedWriter.append(showConcentrationInputDialog().trim());
+                bufferedWriter.close();
+                secondConcentration = true;
+            }
         } catch (IOException e) {
             showDialog(Constants.titleErrorDialog, e.toString(), JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();

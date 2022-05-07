@@ -13,7 +13,7 @@ class Constants {
         const val titleDataRead = "Data Reading"
         const val emptyString = ""
         const val recordingText = "Recording..."
-        const val textComplete = "Complete!"
+        const val textComplete = "Completed"
         const val waitingForRecording = "Waiting for recording"
         const val titleSuccessDialog = "Success"
         const val textDataRecordedDialog = "Data recorded successfully!"
